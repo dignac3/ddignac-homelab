@@ -6,7 +6,7 @@ services:
       - admin_net
       - dmz_net
     ports:
-      - 81:80
+      - 82:80
       - 444:443
     expose:
       - 8085 # expose the dashboard only in traefik network 
