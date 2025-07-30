@@ -9,7 +9,7 @@ services:
       - 8085 # expose the dashboard only in traefik network 
     volumes:
       - /home/dodo/ssl-certs:/ssl-certs
-      - /home/dodo/traefik/etc/traefik:/etc/traefik
+      - /home/dodo/ddignac-homelab/traefik/etc/traefik:/etc/traefik
       - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: unless-stopped
     labels:
