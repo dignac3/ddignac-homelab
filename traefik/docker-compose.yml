@@ -2,6 +2,9 @@ services:
   traefik:
     image: traefik
     container_name: traefik
+    networks:
+      - admin_net
+      - dmz_net
     ports:
       - 81:80
       - 444:443
@@ -22,3 +25,9 @@ services:
       - "traefik.http.routers.traefik_https.tls.certresolver=production"
       - "traefik.http.routers.traefik_https.middlewares=basic-auth-global"
       - "traefik.http.middlewares.basic-auth-global.basicauth.usersfile=/etc/traefik/users"
+
+networks:
+  admin_net: 
+    external: true
+  dmz_net:
+    external: true
