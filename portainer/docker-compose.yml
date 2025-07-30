@@ -1,0 +1,33 @@
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    ports:
+      - 10443:9443
+    volumes:
+      - /etc/letsencrypt/live/npm-3/fullchain.pem:/certs/portainer.crt
+      - /etc/letsencrypt/live/npm-3/privkey.pem:/certs/portainer.key
+      - data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    # command:
+    #   --ssl
+    #   --sslcert /certs/portainer.crt
+    #   --sslkey /certs/portainer.key
+    labels:
+      - "traefik.enable=true" # <== Enable traefik on itself to view dashboard and assign subdomain to view it
+      - "traefik.http.routers.portainer.entrypoints=web,websecure"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.ddignac.fr`)" # <== Setting the domain for the dashboard
+      - "traefik.http.routers.portainer.service=portainer-service"
+      - "traefik.http.services.portainer-service.loadbalancer.server.port=10443"
+      - "traefik.http.routers.portainer.tls=true"
+      - "traefik.http.routers.portainer.tls.certresolver=production"
+    extra_hosts:
+      - "ddignac.fr:10.2.0.254"
+
+volumes:
+  data:
+
+networks:
+  admin_net: 
+    external: true
