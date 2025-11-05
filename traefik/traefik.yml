@@ -1,0 +1,23 @@
+api:
+  dashboard: true
+  insecure: false
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    exposedByDefault: false
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: dorian@ddignac.fr
+      storage: acme.json
+      dnsChallenge:
+        provider: ovh
+        delayBeforeCheck: 10
+

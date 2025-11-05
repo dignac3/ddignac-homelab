@@ -10,18 +10,18 @@ services:
       - data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
-    # command:
-    #   --ssl
-    #   --sslcert /certs/portainer.crt
-    #   --sslkey /certs/portainer.key
+    networks:
+      - admin_net
     labels:
-      - "traefik.enable=true" # <== Enable traefik on itself to view dashboard and assign subdomain to view it
-      - "traefik.http.routers.portainer.entrypoints=web,websecure"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.ddignac.fr`)" # <== Setting the domain for the dashboard
-      - "traefik.http.routers.portainer.service=portainer-service"
-      - "traefik.http.services.portainer-service.loadbalancer.server.port=10443"
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.ddignac.fr`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls=true"
-      - "traefik.http.routers.portainer.tls.certresolver=production"
+      - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.portainer.service=portainer-service"
+      - "traefik.http.services.portainer-service.loadbalancer.server.port=9000"
+      - "traefik.http.services.portainer-service.loadbalancer.server.scheme=http"
+
     extra_hosts:
       - "ddignac.fr:10.2.0.254"
 
@@ -30,4 +30,6 @@ volumes:
 
 networks:
   admin_net: 
+    external: true
+  vpn:
     external: true
