@@ -1,7 +1,7 @@
 
 services:
   traefik:
-    image: traefik:v3.1
+    image: traefik:${TRAEFIK_VERSION}
     container_name: traefik
     restart: unless-stopped
     ports:
@@ -9,7 +9,11 @@ services:
       - "444:443"
     env_file:
       - .env
-
+    command:
+      - --configFile=/traefik.yml 
+      - --providers.file=true 
+      - --providers.file.filename=/traefik.yml
+      - --providers.docker=true
     environment:
       - OVH_ENDPOINT=ovh-eu
       - OVH_APPLICATION_KEY=${OVH_APPLICATION_KEY}
@@ -31,8 +35,7 @@ services:
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$rGvWjRSF$$w0FPvQ/YQc32jPUG8Rvn40"
-      - "traefik.http.middlewares.admin-whitelist.ipwhitelist.sourcerange=10.3.0.0/24,192.168.1.0/24"
-      - "traefik.http.routers.dashboard.middlewares=auth,admin-whitelist"
+      - "traefik.http.routers.dashboard.middlewares=auth@docker,admin-net-whitelist@file"
 
 networks:
   admin_net:

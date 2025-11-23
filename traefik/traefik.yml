@@ -21,3 +21,20 @@ certificatesResolvers:
         provider: ovh
         delayBeforeCheck: 10
 
+http:
+  middlewares:
+    vpn-only-whitelist:
+      ipWhitelist:
+        sourceRange:
+          - "10.3.0.0/24"
+
+    lan-only-whitelist:
+      ipWhitelist:
+        sourceRange:
+          - "192.168.1.0/24"
+
+    admin-net-whitelist:
+      ipWhitelist:
+        sourceRange:
+          - "10.3.0.0/24"
+          - "192.168.1.0/24"
