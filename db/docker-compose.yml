@@ -12,6 +12,7 @@ services:
       - "traefik.http.routers.adminer.service=adminer"
       - "traefik.http.routers.adminer.middlewares=adminWhitelist@file"
       - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+      - "traefik.http.services.adminer.loadbalancer.server.scheme=http"
     networks:
       - admin_net
       - db_mariadb_net
