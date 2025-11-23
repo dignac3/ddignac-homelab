@@ -12,7 +12,7 @@ services:
     command:
       - --configFile=/traefik.yml 
       - --providers.file=true 
-      - --providers.file.filename=/traefik.yml
+      - --providers.file.filename=/middleware.yml
       - --providers.docker=true
     environment:
       - OVH_ENDPOINT=ovh-eu
