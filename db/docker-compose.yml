@@ -33,7 +33,7 @@ services:
       - vpn
 
   postgresql:
-    image: postgres:${PG_VERSION}
+    image: tensorchord/pgvecto-rs:${PG_VERSION}
     container_name: postgresql
     restart: unless-stopped
     environment:
