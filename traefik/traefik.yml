@@ -1,9 +1,8 @@
 providers:
   docker:
     exposedByDefault: false
-
-file:
-    filename: /middleware.yml # Le chemin dans le conteneur
+  file:
+    filename: /middleware.yml 
     watch: true
 
 api:
