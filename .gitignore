@@ -1,2 +1,4 @@
 acme.json
 .env
+docs/
+.DS_Store
