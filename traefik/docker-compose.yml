@@ -35,7 +35,7 @@ services:
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$rGvWjRSF$$w0FPvQ/YQc32jPUG8Rvn40"
-      - "traefik.http.routers.dashboard.middlewares=auth@docker,admin-net-whitelist@file"
+      - "traefik.http.routers.dashboard.middlewares=auth@docker,adminWhitelist@file"
 
 networks:
   admin_net:
