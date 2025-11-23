@@ -1,0 +1,78 @@
+services:
+  adminer:
+    image: adminer:${ADMINER_VERSION}
+    container_name: adminer
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer.rule=Host(`db.ddignac.fr`)"
+      - "traefik.http.routers.adminer.entrypoints=websecure"
+      - "traefik.http.routers.adminer.tls=true"
+      - "traefik.http.routers.adminer.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.adminer.service=adminer"
+      - "traefik.http.routers.adminer.middlewares=admin-net-whitelist@file"
+      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+    networks:
+      - admin_net
+      - db_mariadb_net
+      - db_postgresql_net
+      - db_redis_net
+
+  mariadb:
+    image: mariadb:${MARIADB_VERSION}
+    container_name: mariadb
+    ports:
+      - 127.0.0.1:3306:3306
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PWD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - db_mariadb_net
+      - vpn
+
+postgresql:
+    image: postgres:${PG_VERSION}
+    container_name: postgresql
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_ROOT_PWD}
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    networks:
+      - db_postgresql_net
+      - vpn
+
+redis:
+    image: redis:${REDIS_VERSION}
+    container_name: redis
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - backend
+      - db_redis_net
+
+volumes:
+  mariadb_data:
+    external: true
+  postgresql_data:
+    external: true
+  redis_data:
+    external: true
+
+networks:
+  admin_net:
+    external: true
+  db_mariadb_net:
+    external: true
+  db_postgresql_net:
+    external: true  
+  db_redis_net:
+    external: true
+  vpn: #TO DELETE
+    external: true
+  backend: # TO DELETE
+    external: true
