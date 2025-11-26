@@ -3,8 +3,6 @@ services:
     image: 	ghcr.io/goauthentik/server:${AUTHENTIK_TAG}
     restart: unless-stopped
     command: server
-    env_file:
-      - stack.env
     volumes:
       - media:/media
       - templates:/templates
@@ -14,6 +12,22 @@ services:
       - db_postgresql_net
       - dmz_net
       - db_redis_net
+    environment:
+      - AUTHENTIK_SECRET_KEY
+      - AUTHENTIK_REDIS__HOST
+      - AUTHENTIK_POSTGRESQL__HOST
+      - AUTHENTIK_POSTGRESQL__USER
+      - AUTHENTIK_POSTGRESQL__NAME
+      - AUTHENTIK_POSTGRESQL__PASSWORD
+      - AUTHENTIK_EMAIL__HOST
+      - AUTHENTIK_EMAIL__PORT
+      - AUTHENTIK_EMAIL__USERNAME
+      - AUTHENTIK_EMAIL__PASSWORD
+      - AUTHENTIK_EMAIL__USE_TLS
+      - AUTHENTIK_EMAIL__USE_SSL
+      - AUTHENTIK_EMAIL__TIMEOUT
+      - AUTHENTIK_EMAIL__FROM
+
     labels:
       - "traefik.enable=true"
      
@@ -39,14 +53,26 @@ services:
       - db_postgresql_net
       - db_redis_net
     command: worker
-    env_file:
-      - stack.env
     user: root
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - media:/media
       - templates:/templates
       - /etc/letsencrypt/live:/certs #TODO to delete
+    environment:
+      - AUTHENTIK_REDIS__HOST
+      - AUTHENTIK_POSTGRESQL__HOST
+      - AUTHENTIK_POSTGRESQL__USER
+      - AUTHENTIK_POSTGRESQL__NAME
+      - AUTHENTIK_POSTGRESQL__PASSWORD
+      - AUTHENTIK_EMAIL__HOST
+      - AUTHENTIK_EMAIL__PORT
+      - AUTHENTIK_EMAIL__USERNAME
+      - AUTHENTIK_EMAIL__PASSWORD
+      - AUTHENTIK_EMAIL__USE_TLS
+      - AUTHENTIK_EMAIL__USE_SSL
+      - AUTHENTIK_EMAIL__TIMEOUT
+      - AUTHENTIK_EMAIL__FROM
 
 
 volumes:
