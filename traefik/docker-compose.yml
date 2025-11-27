@@ -9,11 +9,7 @@ services:
       - "444:443"
     env_file:
       - .env
-    command:
-      - --configFile=/traefik.yml 
-      - --providers.file=true 
-      - --providers.file.filename=/middleware.yml
-      - --providers.docker=true
+    command: --configFile=/traefik.yml 
     environment:
       - OVH_ENDPOINT=ovh-eu
       - OVH_APPLICATION_KEY=${OVH_APPLICATION_KEY}
@@ -23,7 +19,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/traefik.yml:ro
-      - ./middleware.yml:/middleware.yml:ro
+      - ./middlewares:/etc/traefik/dynamic:ro
       - ./acme.json:/acme.json
     networks:
       - vpn
@@ -35,8 +31,7 @@ services:
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$rGvWjRSF$$w0FPvQ/YQc32jPUG8Rvn40"
-      - "traefik.http.routers.dashboard.middlewares=auth@docker,adminWhitelist@file"
+      - "traefik.http.routers.dashboard.middlewares=basicauth@file,adminWhitelist@file"
 
 networks:
   admin_net:

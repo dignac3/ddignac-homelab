@@ -2,7 +2,7 @@ providers:
   docker:
     exposedByDefault: false
   file:
-    filename: /middleware.yml 
+    directory: /etc/traefik/dynamic/
     watch: true
 
 api:

@@ -1,0 +1,22 @@
+
+http:
+  middlewares:
+    adminWhitelist:
+      ipWhitelist:
+        sourceRange:
+          - "10.3.0.0/24"
+          - "192.168.1.0/24"
+
+    securityHeaders:
+        headers:
+          sslRedirect: true         # Force HTTPS
+          stsSeconds: 31536000      # Active le HSTS (pour un an)
+          contentTypeNosniff: true  # Sécurité contre les attaques XSS
+
+    compressGzip:
+      compress: true
+
+    basicauth:
+      basicAuth:
+        users:
+          - "admin:$$apr1$$rGvWjRSF$$w0FPvQ/YQc32jPUG8Rvn40"
