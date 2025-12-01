@@ -18,9 +18,33 @@ services:
       - "traefik.http.routers.registry.service=registry-service"
       - "traefik.http.services.registry-service.loadbalancer.server.port=5000"
       - "traefik.http.services.registry-service.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.registry.middlewares=ak-outpost-traefik-proxy-service@docker"
+
+  registry_ui:
+    image: joxit/docker-registry-ui:latest
+    container_name: registry_ui
+    restart: unless-stopped
+    environment:
+      REGISTRY_URL: https://registry.ddignac.fr:444/v2
+      NGINX_PROXY_URL: https://registry-ui.ddignac.fr
+      DELETE_IMAGES: "true"
+      
+    networks:
+      - admin_net # Pour communiquer avec Traefik et Authentik
+      
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.registry-ui.rule=Host(`registry-ui.ddignac.fr`)"
+      - "traefik.http.routers.registry-ui.entrypoints=websecure"
+      - "traefik.http.routers.registry-ui.tls.certresolver=letsencrypt"
+      
+      - "traefik.http.routers.registry-ui.middlewares=ak-outpost-traefik-proxy-service@docker"
+
 networks:
   admin_net:
     external: true
+
+
 
 volumes:
   registry_data:
