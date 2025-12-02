@@ -8,9 +8,9 @@ services:
       - templates:/templates
       - /etc/letsencrypt/live:/certs #TODO to delete (Ce volume n'est plus nécessaire car Traefik gère les certificats)
     networks:
+      - dmz_net
       - vpn #TODO TO delete
       - db_postgresql_net
-      - dmz_net
       - db_redis_net
     environment:
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
@@ -76,14 +76,13 @@ services:
 
   proxy:
       image: ghcr.io/goauthentik/proxy:${AUTHENTIK_TAG}
+      depends_on:
+        - server
       networks:
         - dmz_net
       restart: unless-stopped
-      ports:
-          - 9000:9000
-          - 9443:9443
       environment:
-          AUTHENTIK_HOST: http://authentik-server-1:9000
+          AUTHENTIK_HOST: http://server:9000
           AUTHENTIK_INSECURE: "true"
           AUTHENTIK_TOKEN: ${AUTHENTIK_PROXY_TOKEN}
           AUTHENTIK_HOST_BROWSER: "https://${DOMAIN_NAME}"
