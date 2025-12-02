@@ -11,7 +11,7 @@ http:
         permanent: true
     authentikAuth:
       forwardAuth:
-        address: http://authentik-server-1:9000/outpost.goauthentik.io/auth/traefik
+        address: http://authentik-proxy-1:9000/outpost.goauthentik.io/auth/traefik
         trustForwardHeader: true
         authResponseHeaders:
             - X-authentik-username
