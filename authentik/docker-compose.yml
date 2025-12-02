@@ -55,7 +55,6 @@ services:
     command: worker
     user: root
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - media:/media
       - templates:/templates
       - /etc/letsencrypt/live:/certs #TODO to delete (Ce volume n'est plus nécessaire)
@@ -74,6 +73,20 @@ services:
       AUTHENTIK_EMAIL__USE_SSL: ${AUTHENTIK_EMAIL__USE_SSL}
       AUTHENTIK_EMAIL__TIMEOUT: ${AUTHENTIK_EMAIL__TIMEOUT}
       AUTHENTIK_EMAIL__FROM: ${AUTHENTIK_EMAIL__FROM}
+
+  proxy:
+      image: ghcr.io/goauthentik/proxy:${AUTHENTIK_TAG}
+      networks:
+        - dmz_net
+      restart: unless-stopped
+      ports:
+          - 9000:9000
+          - 9443:9443
+      environment:
+          AUTHENTIK_HOST: http://authentik-server-1:9000
+          AUTHENTIK_INSECURE: "true"
+          AUTHENTIK_TOKEN: ${AUTHENTIK_PROXY_TOKEN}
+          AUTHENTIK_HOST_BROWSER: "https://${DOMAIN_NAME}"
 
 volumes:
   media:
