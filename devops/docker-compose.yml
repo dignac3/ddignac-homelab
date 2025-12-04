@@ -25,7 +25,7 @@ services:
       - "traefik.http.routers.registry.service=registry-service"
       - "traefik.http.services.registry-service.loadbalancer.server.port=5000"
       - "traefik.http.services.registry-service.loadbalancer.server.scheme=http"
-      - "traefik.http.routers.registry.middlewares=authentikAuth@file"
+      - "traefik.http.routers.registry.middlewares=adminWhitelist@file,basicauth@file"
 
   registry_ui:
     image: joxit/docker-registry-ui:latest
