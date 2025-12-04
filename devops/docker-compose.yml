@@ -1,6 +1,6 @@
 services:
   registry:
-    image: registry:2
+    image: registry:3
     container_name: registry
     restart: always
     environment:
@@ -44,7 +44,7 @@ services:
       - "traefik.http.routers.registry-ui.rule=Host(`registry-ui.ddignac.fr`)"
       - "traefik.http.routers.registry-ui.entrypoints=websecure"
       - "traefik.http.routers.registry-ui.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.registry-ui.middlewares=authentikAuth@file"
+      - "traefik.http.routers.registry-ui.middlewares=adminWhitelist@file,authentikAuth@file"
 
       
 networks:
