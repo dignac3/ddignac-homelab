@@ -80,6 +80,7 @@ services:
         - server
       networks:
         - dmz_net
+        - admin_net
       restart: unless-stopped
       environment:
           AUTHENTIK_HOST: http://server:9000
@@ -93,6 +94,8 @@ volumes:
 
 networks:
   vpn: #TODO TO delete
+    external: true
+  admin_net:
     external: true
   dmz_net:
     external: true
