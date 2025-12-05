@@ -54,9 +54,24 @@ http:
         - httpsRedirect
       tls:
         certResolver: letsencrypt 
+    esphome-router:
+      entryPoints:
+        - websecure
+      rule: "Host(`esp.ddignac.fr`)"
+      service: esphome-service
+      middlewares:
+        - securityHeaders
+        - compressGzip
+        - httpsRedirect
+      tls:
+        certResolver: letsencrypt
         
   services:
     ha-service:
       loadBalancer:
         servers:
           - url: "http://192.168.1.2:8123"
+    esphome-service:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.2:6052"
