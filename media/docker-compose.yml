@@ -1,0 +1,67 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:${JELLYFIN_VERSION:-latest}
+    container_name: jellyfin
+    user: 14:50
+    ports:
+      - 8096:8096
+    volumes:
+      - jellyfin-config:/config
+      - jellyfin-cache:/cache
+      - downloads:/media:ro
+    restart: 'unless-stopped'
+    environment:
+      - JELLYFIN_PublishedServerUrl=https://tv.ddignac.fr
+    networks:
+     - dmz_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`tv.ddignac.fr`)"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares=httpsRedirect@file,securityHeaders@file"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+  transmission:
+    image: lscr.io/linuxserver/transmission:${TRANSMISSION_VERSION:-latest}
+    container_name: transmission
+    ports:
+      - 9091:9091
+    networks:
+      - admin_net
+    environment:
+      - PUID=14
+      - PGID=50
+      - TZ=Etc/UTC+1
+    volumes:
+      - transmission-config:/config
+      - downloads:/downloads
+      - softwares:/downloads/softwares
+      - torrent-watch:/watch
+    # ports:
+    #   - 51413:51413
+    #   - 51413:51413/udp
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.transmission.rule=Host(`torrent.ddignac.fr`)"
+      - "traefik.http.routers.transmission.entrypoints=websecure"
+      - "traefik.http.routers.transmission.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares=adminWhitelist@file,securityHeaders@file,httpsRedirect@file,authentikAuth@file"
+      - "traefik.http.services.transmission.loadbalancer.server.port=9091"
+
+
+volumes:
+  transmission-config:
+  softwares:
+  downloads:
+  jellyfin-cache:
+  jellyfin-config:
+  torrent-watch:
+
+networks:
+  dmz_net:
+    external: true
+  admin_net:
+    external: true
