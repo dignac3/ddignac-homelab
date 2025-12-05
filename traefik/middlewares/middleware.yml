@@ -41,3 +41,22 @@ http:
       basicAuth:
         users:
           - "admin:$2a$05$sTTis5YfkSHqCvA9KtySuuz9y9FDx4S8Xgr9sxoZuOJustupWb0S2"
+
+  routers:
+    ha-router:
+      entryPoints:
+        - websecure
+      rule: "Host(`home.ddignac.fr`)"
+      service: ha-service
+      middlewares:
+        - securityHeaders
+        - compressGzip
+        - httpsRedirect
+      tls:
+        certResolver: letsencrypt 
+        
+  services:
+    ha-service:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.2:8123"
