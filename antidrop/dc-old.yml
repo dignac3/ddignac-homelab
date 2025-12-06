@@ -1,0 +1,28 @@
+services:
+  web:
+    image: 10.2.0.254:5000/antidrop-front:latest
+    ports:
+      - 3002:3002
+    environment:
+      - API_URL=${API_URL}
+    restart: always
+
+  api:
+    image: 10.2.0.254:5000/antidrop-api:latest
+    ports:
+      - 8080:80
+    networks:
+      - mariadb
+    environment:
+      - ALIEXPRESS_PUBLIC_KEY=${ALIEXPRESS_PUBLIC_KEY}
+      - ALIEXPRESS_SECRET_KEY=${ALIEXPRESS_SECRET_KEY}
+      - ZAPIEX_API_KEY=${ZAPIEX_API_KEY}
+      - GOOGLE_CLOUD_API_KEY=${GOOGLE_CLOUD_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - CORS_ALLOW_ORIGIN=^.*$
+      - APP_ENV=prod
+    restart: always
+    
+networks:
+  mariadb:
+    external: true
