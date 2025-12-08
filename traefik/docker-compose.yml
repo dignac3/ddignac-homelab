@@ -21,6 +21,7 @@ services:
       - ./traefik.yml:/traefik.yml:ro
       - ./middlewares:/etc/traefik/dynamic:ro
       - ./acme.json:/acme.json
+      - ./acme-http.json:/acme-http.json
     networks:
       - vpn
       - admin_net
