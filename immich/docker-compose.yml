@@ -18,6 +18,13 @@ services:
       - db_postgresql_net
       - db_redis_net
       - dmz_net  
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.immich.rule=Host(`photos.ddignac.fr`)"
+      - "traefik.http.routers.immich.entrypoints=websecure"
+      - "traefik.http.routers.immich.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.immich.middlewares=securityHeaders@file"
+      - "traefik.http.services.immich.loadbalancer.server.port=2283"
 
 
   machine-learning:
