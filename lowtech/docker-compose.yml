@@ -1,7 +1,7 @@
 services:
 
   nextcloud:
-    image: nextcloud:latest
+    image: nextcloud:${LT_NEXTCLOUD_VERSION}
     restart: always
     volumes:
       - nextcloud_data:/var/www/html/data
@@ -17,14 +17,13 @@ services:
     networks: 
       - dmz_net
       - db_mariadb_net
-      - vpn
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.lt-nextcloud.rule=Host(`drive.lowtechtulle.fr`)"
-      - "traefik.http.routers.lt-nextcloud.entrypoints=websecure, web"
+      - "traefik.http.routers.lt-nextcloud.entrypoints=web,websecure"
+      - "traefik.http.routers.lt-nextcloud.tls=true"
       - "traefik.http.routers.lt-nextcloud.tls.certresolver=letsencryptHTTP"
-      - "traefik.http.routers.lt-nextcloud.middlewares=securityHeaders@file"
-
+            
 volumes:
   nextcloud_data:
   nextcloud_config:
@@ -34,6 +33,4 @@ networks:
   dmz_net:
     external: true
   db_mariadb_net:
-    external: true
-  vpn:
     external: true
