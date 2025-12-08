@@ -1,0 +1,39 @@
+services:
+
+  nextcloud:
+    image: nextcloud:latest
+    restart: always
+    volumes:
+      - nextcloud_data:/var/www/html/data
+      - nextcloud_config:/var/www/html/config
+      - nextcloud_custom_apps:/var/www/html/custom_apps
+    environment:
+      - MYSQL_PASSWORD=${DB_PWD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_HOST=${DB_HOST}
+      - PHP_MEMORY_LIMIT=4096M
+      - PHP_UPLOAD_LIMIT=4096M
+    networks: 
+      - dmz_net
+      - db_mariadb_net
+      - vpn
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lt-nextcloud.rule=Host(`drive.lowtechtulle.fr`)"
+      - "traefik.http.routers.lt-nextcloud.entrypoints=websecure, web"
+      - "traefik.http.routers.lt-nextcloud.tls.certresolver=letsencryptHTTP"
+      - "traefik.http.routers.lt-nextcloud.middlewares=securityHeaders@file"
+
+volumes:
+  nextcloud_data:
+  nextcloud_config:
+  nextcloud_custom_apps:
+
+networks:
+  dmz_net:
+    external: true
+  db_mariadb_net:
+    external: true
+  vpn:
+    external: true

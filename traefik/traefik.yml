@@ -26,3 +26,9 @@ certificatesResolvers:
       dnsChallenge:
         provider: ovh
         delayBeforeCheck: 10
+  letsencryptHTTP:
+    acme:
+      email: dorian@ddignac.fr
+      storage: acme-http.json
+      httpChallenge:
+        entryPoint: websecure
