@@ -31,4 +31,4 @@ certificatesResolvers:
       email: dorian@ddignac.fr
       storage: acme-http.json
       httpChallenge:
-        entryPoint: websecure
+        entryPoint: web
