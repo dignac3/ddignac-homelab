@@ -1,11 +1,16 @@
 services:
   web:
     image: ${REGISTRY_URL}/antidrop-front:${ANTIDROP_WEB_VERSION}
-    ports:
-      - 3002:3002
     environment:
       - API_URL=${API_URL}
     restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.antidrop.rule=Host(`antidrop.fr`)"
+      - "traefik.http.routers.antidrop.entrypoints=websecure, web"
+      - "traefik.http.routers.antidrop.tls.certresolver=letsencryptHTTP"
+      # - "traefik.http.routers.antidrop.middlewares=securityHeaders@file"
+      - "traefik.http.services.antidrop-service.loadbalancer.server.port=3002"
 
   api:
     image: ${REGISTRY_URL}/antidrop-api:${ANTIDROP_API_VERSION}
