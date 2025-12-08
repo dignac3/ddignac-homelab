@@ -1,0 +1,18 @@
+services:
+  portfolio:
+    image: ${REGISTRY_URL}/ddignac-portfolio:${PORTFOLIO_VERSION}
+    container_name: portfolio
+    restart: unless-stopped
+    networks:
+      - vpn #TODO DELETE
+      - dmz_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portfolio.rule=Host(`${DOMAIN_NAME}`) || Host(`www.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.portfolio.entrypoints=websecure" 
+      - "traefik.http.routers.portfolio.tls.certresolver=letsencrypt"
+networks:
+  dmz_net:
+    external: true
+  vpn: #TODO DELETE
+    external: true
