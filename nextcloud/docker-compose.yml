@@ -21,8 +21,6 @@ services:
   nextcloud:
     image: nextcloud:latest
     container_name: nextcloud
-    ports:
-      - 85:80
     restart: always
     volumes:
       - data:/var/www/html/data
@@ -42,12 +40,10 @@ services:
       - dmz_net
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=dmz_net"
       - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.ddignac.fr`)"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.tls.certresolver=letsencrypt"
-  #      - "traefik.http.routers.adminer.middlewares=adminWhitelist@file"
-  #      - "traefik.http.routers.adminer.service=adminer"
-  #      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
 
   onlyoffice:
     image: onlyoffice/documentserver
@@ -63,7 +59,6 @@ services:
       - dmz_net
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=dmz_net"
       - "traefik.http.routers.onlyoffice.rule=Host(`office.ddignac.fr`)"
       - "traefik.http.routers.onlyoffice.entrypoints=websecure"
       - "traefik.http.routers.onlyoffice.tls.certresolver=letsencrypt"
