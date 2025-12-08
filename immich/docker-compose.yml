@@ -21,6 +21,7 @@ services:
       - dmz_net  
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=dmz_net"
       - "traefik.http.routers.immich.rule=Host(`photos.ddignac.fr`)"
       - "traefik.http.routers.immich.entrypoints=websecure"
       - "traefik.http.routers.immich.tls.certresolver=letsencrypt"
