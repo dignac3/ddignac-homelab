@@ -14,6 +14,7 @@ services:
       REDIS_HOSTNAME: ${REDIS_HOSTNAME}
       REDIS_PORT: ${REDIS_PORT}
     networks:
+      - default
       - vpn #TODO DELETE
       - db_postgresql_net
       - db_redis_net
@@ -31,6 +32,8 @@ services:
     image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
     volumes:
       - model-cache:/cache
+    networks:
+      - default
     environment:
       DB_HOSTNAME: ${DB_HOSTNAME}
       DB_USERNAME: ${DB_USERNAME}
@@ -45,6 +48,8 @@ volumes:
   model-cache:
 
 networks:
+  default:
+    driver: bridge
   vpn: #TODO DELETE
     external: true
   db_postgresql_net:
