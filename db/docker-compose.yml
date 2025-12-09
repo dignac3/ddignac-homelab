@@ -5,7 +5,8 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.adminer.rule=Host(`db.ddignac.fr`)"
+      - "traefik.docker.network=admin_net"
+      - "traefik.http.routers.adminer.rule=Host(`db.${DOMAIN_NAME}`)"
       - "traefik.http.routers.adminer.entrypoints=websecure"
       - "traefik.http.routers.adminer.tls.certresolver=letsencrypt"
       - "traefik.http.routers.adminer.middlewares=adminWhitelist@file"
@@ -29,7 +30,6 @@ services:
       - mariadb_data:/var/lib/mysql
     networks:
       - db_mariadb_net
-      - vpn
 
   postgresql:
     image: tensorchord/pgvecto-rs:${PG_VERSION}
@@ -42,7 +42,6 @@ services:
       - postgresql_data:/var/lib/postgresql/data
     networks:
       - db_postgresql_net
-      - vpn
 
   redis:
     image: redis:${REDIS_VERSION}
@@ -51,7 +50,6 @@ services:
       - redis_data:/data
     restart: unless-stopped
     networks:
-      - backend
       - db_redis_net
 
 volumes:
@@ -70,8 +68,4 @@ networks:
   db_postgresql_net:
     external: true  
   db_redis_net:
-    external: true
-  vpn: #TO DELETE
-    external: true
-  backend: # TO DELETE
     external: true
