@@ -1,6 +1,6 @@
 services:
   n8n:
-    image: docker.n8n.io/n8nio/n8n
+    image: docker.n8n.io/n8nio/n8n:${N8N_VERSION}
     restart: unless-stopped
     container_name: n8n
     ports:
@@ -11,6 +11,7 @@ services:
       - db_redis_net
     labels:
       - traefik.enable=true
+      - traefik.docker.network=dmz_net
       - traefik.http.routers.n8n.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)
       - traefik.http.routers.n8n.tls=true
       - traefik.http.routers.n8n.entrypoints=web,websecure
@@ -36,11 +37,6 @@ services:
       - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
       - TZ=${GENERIC_TIMEZONE}
-
-#      - N8N_BASIC_AUTH_ACTIVE=true
-#      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
-#      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
-#      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY_RANDOM} # Clé secrète (32+ chars aléatoires)
 
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=${DB_POSTGRESDB_HOST:-postgresql}
