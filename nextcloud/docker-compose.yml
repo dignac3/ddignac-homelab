@@ -8,7 +8,7 @@ services:
       - data:/var/www/html/data
       - config:/var/www/html/config
       - custom_apps:/var/www/html/custom_apps
-      - media_softwares:/var/www/html/logiciels
+#      - media_softwares:/var/www/html/logiciels
     environment:
       - MYSQL_PASSWORD=${DB_PWD}
       - MYSQL_DATABASE=${DB_NAME}
