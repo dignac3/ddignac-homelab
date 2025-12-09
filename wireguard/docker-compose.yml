@@ -1,37 +1,34 @@
-volumes:
-  wireguard-configs:
-  pihole-etc:
-  pihole-dnsmasq:
-  unbound-config:
-
-networks:
-  vpn:
-    external: true
-
 services:
   wg-easy:
-    image: weejewel/wg-easy:latest
+    image: weejewel/wg-easy:${WG_EASY_VERSION}
     container_name: wg-easy
     restart: unless-stopped
     network_mode: host
     environment:
-      - WG_HOST=${MASTER_PUBLIC_FQDN}    
+      - WG_HOST=dns.${DOMAIN_NAME}    
       - PASSWORD=${WG_PASSWORD}
       - WG_PORT=51820
       - WG_DEFAULT_ADDRESS=10.3.0.x
       - WG_DEFAULT_DNS=192.168.1.2
-      # AllowedIPs = tous les réseaux accessibles via VPN
+      # AllowedIPs = tous les réseaux accessibles via dns
       # inclut LAN + réseaux Docker internes
       - WG_ALLOWED_IPS=192.168.1.0/24,10.100.0.0/24,10.10.0.0/24,10.30.0.0/24,10.2.0.0/24,10.3.0.0/24
     volumes:
       - wireguard-configs:/etc/wireguard
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.wireguard-router.rule=Host(`wireguard.${DOMAIN_NAME}`) || Host(`vpn.${DOMAIN_NAME}`)
+      - traefik.http.routers.wireguard-router.entrypoints=websecure
+      - traefik.http.routers.wireguard-router.tls.certresolver=letsencrypt
+      - traefik.http.routers.wireguard-router.middlewares=adminWhitelist@file,securityHeaders@file
+      - traefik.http.services.wg-service.loadbalancer.server.url=http://192.168.1.2:51821
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
 
  
   unbound:
-    image: mvance/unbound:latest
+    image: mvance/unbound:${UNBOUND_VERSION}
     container_name: unbound
     restart: unless-stopped
     hostname: unbound
@@ -40,7 +37,7 @@ services:
     environment:
       - TZ=Europe/Paris
     networks:
-      vpn:
+      dns:
         ipv4_address: ${UNBOUND_IP}
 
 
@@ -48,7 +45,7 @@ services:
     depends_on:
       - unbound
     container_name: pihole
-    image: pihole/pihole:latest
+    image: pihole/pihole:${PIHOLE_VERSION}
     restart: unless-stopped
     ports:
       - "53:53/tcp"
@@ -56,13 +53,13 @@ services:
       - "54:80"
     dns:
       - ${UNBOUND_IP}
-      - 1.1.1.1
+      - ${DNS_SERVER_1}
     environment:
       TZ: "Europe/Paris"
       WEBPASSWORD: ${PIHOLE_PASSWORD}
-      ServerIP: 192.168.1.2 #${PIHOLE_IP}        # IP du serveur hôte
+      ServerIP: ${PIHOLE_IP}
       DNS1: ${UNBOUND_IP}
-      DNS2: 1.1.1.1
+      DNS2: ${DNS_SERVER_1}
       VIRTUAL_HOST: ${PIHOLE_VIRTUAL_HOST}
       FTLCONF_dns_listeningMode: 'ALL' # ajouté car pihole dans un réseau docker & je veux l'accès dans le LAN de la maison 
     hostname: ${PIHOLE_VIRTUAL_HOST}
@@ -70,19 +67,31 @@ services:
       - pihole-etc:/etc/pihole
       - pihole-dnsmasq:/etc/dnsmasq.d
     networks:
-      vpn:
+      dns:
         ipv4_address: ${PIHOLE_IP}
+      admin_net:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pihole.rule=Host(`dns.ddignac.fr`)"
+      - "traefik.http.routers.pihole.rule=Host(`dns.${DOMAIN_NAME}`)"
       - "traefik.http.routers.pihole.entrypoints=websecure"
       - "traefik.http.routers.pihole.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.pihole.middlewares=adminWhitelist@file,pihole-redirect"
+      - "traefik.http.routers.pihole.middlewares=adminWhitelist@file,securityHeaders@file"
+      - "traefik.http.services.pihole-service.loadbalancer.server.port=80"
 
-      - 'traefik.http.middlewares.pihole-redirect.redirectregex.regex=^https://dns\.ddignac\.fr/$'
-      - "traefik.http.middlewares.pihole-redirect.redirectregex.replacement=https://dns.ddignac.fr/admin/login"
-      - "traefik.http.middlewares.pihole-redirect.redirectregex.permanent=true"
-
-      - "traefik.http.services.pihole.loadbalancer.server.port=80"
     cap_add:
       - NET_ADMIN
+
+volumes:
+  wireguard-configs:
+  pihole-etc:
+  pihole-dnsmasq:
+  unbound-config:
+
+networks:
+  admin_net:
+    external: true
+  dns:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${DNS_SUBNET}
