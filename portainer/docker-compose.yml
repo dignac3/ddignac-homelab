@@ -1,7 +1,7 @@
 services:
   portainer:
     container_name: portainer
-    image: portainer/portainer-ce:latest
+    image: portainer/portainer-ce:${PORTAINER_VERSION}
     ports:
       - 10443:9443
     volumes:
@@ -14,18 +14,16 @@ services:
       - admin_net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.ddignac.fr`)"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN_NAME}`)"
       - "traefik.http.routers.portainer.entrypoints=websecure"
-      - "traefik.http.routers.portainer.tls=true"
       - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.portainer.service=portainer-service"
+      - "traefik.http.routers.portainer.middlewares=adminWhitelist@file"
+      
       - "traefik.http.services.portainer-service.loadbalancer.server.port=9000"
       - "traefik.http.services.portainer-service.loadbalancer.server.scheme=http"
-      - "traefik.http.middlewares.admin-whitelist.ipwhitelist.sourcerange=10.3.0.0/24,192.168.1.0/24"
-      - "traefik.http.routers.portainer.middlewares=admin-whitelist"
 
     extra_hosts:
-      - "ddignac.fr:192.168.1.2"
+      - "${DOMAIN_NAME}:192.168.1.2"
 
 volumes:
   data:
