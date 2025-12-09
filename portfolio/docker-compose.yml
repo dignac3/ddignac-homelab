@@ -4,7 +4,6 @@ services:
     container_name: portfolio
     restart: unless-stopped
     networks:
-      - vpn #TODO DELETE
       - dmz_net
     labels:
       - "traefik.enable=true"
@@ -13,6 +12,4 @@ services:
       - "traefik.http.routers.portfolio.tls.certresolver=letsencrypt"
 networks:
   dmz_net:
-    external: true
-  vpn: #TODO DELETE
     external: true
