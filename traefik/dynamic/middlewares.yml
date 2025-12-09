@@ -5,10 +5,12 @@ http:
         sourceRange:
           - "10.3.0.0/24"
           - "192.168.1.0/24"
+
     httpsRedirect:
       redirectScheme:
         scheme: https
         permanent: true
+
     authentikAuth:
       forwardAuth:
         address: http://authentik-proxy-1:9000/outpost.goauthentik.io/auth/traefik
@@ -27,7 +29,6 @@ http:
             - X-authentik-meta-app
             - X-authentik-meta-version
       
-
     securityHeaders:
       headers:
         sslRedirect: true
@@ -37,7 +38,7 @@ http:
     compressGzip:
       compress: true
 
-    basicauth:
+    basicAuth:
       basicAuth:
         users:
           - "admin:$2a$05$sTTis5YfkSHqCvA9KtySuuz9y9FDx4S8Xgr9sxoZuOJustupWb0S2"
