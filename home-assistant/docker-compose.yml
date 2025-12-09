@@ -9,6 +9,13 @@ services:
     restart: unless-stopped
     privileged: true
     network_mode: host
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ha.rule=Host(`home.${DOMAIN_NAME}`)
+      - traefik.http.routers.ha.entrypoints=websecure
+      - traefik.http.routers.ha.tls.certresolver=letsencrypt
+      - traefik.http.routers.ha.middlewares=securityHeaders@file,compressGzip@file
+      - traefik.http.services.ha-service.loadbalancer.server.url=http://192.168.1.2:8123
   esphome:
     container_name: esphome
     image: ghcr.io/esphome/esphome:${ESPHOME_VERSION}
@@ -21,6 +28,15 @@ services:
     environment:
       - USERNAME=${ESPHOME_USER}
       - PASSWORD=${ESPHOME_PWD}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.esphome.rule=Host(`esp.${DOMAIN_NAME}`)
+      - traefik.http.routers.esphome.entrypoints=websecure
+      - traefik.http.routers.esphome.tls.certresolver=letsencrypt
+      - traefik.http.routers.esphome.middlewares=securityHeaders@file,compressGzip@file
+      - traefik.http.services.esphome-service.loadbalancer.server.url=http://192.168.1.2:6052
+
+
 volumes:
   config:
   esphome-config:
