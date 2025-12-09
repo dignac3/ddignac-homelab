@@ -25,7 +25,6 @@ services:
     networks:
       - admin_net
       - dmz_net
-      - vpn
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN_NAME}`)"
@@ -35,8 +34,6 @@ services:
       - "traefik.http.routers.dashboard.middlewares=authentikAuth@file,adminWhitelist@file"
 
 networks:
-  vpn: 
-    external: true
   admin_net:
     external: true
   dmz_net:
