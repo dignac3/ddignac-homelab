@@ -15,14 +15,13 @@ services:
       REDIS_PORT: ${REDIS_PORT}
     networks:
       - default
-      - vpn #TODO DELETE
       - db_postgresql_net
       - db_redis_net
       - dmz_net  
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=dmz_net"
-      - "traefik.http.routers.immich.rule=Host(`photos.ddignac.fr`)"
+      - "traefik.http.routers.immich.rule=Host(`photos.${DOMAIN_NAME}`)"
       - "traefik.http.routers.immich.entrypoints=websecure"
       - "traefik.http.routers.immich.tls.certresolver=letsencrypt"
       - "traefik.http.routers.immich.middlewares=securityHeaders@file"
@@ -51,8 +50,6 @@ volumes:
 networks:
   default:
     driver: bridge
-  vpn: #TODO DELETE
-    external: true
   db_postgresql_net:
     external: true
   db_redis_net:
