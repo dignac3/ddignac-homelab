@@ -3,20 +3,18 @@ services:
     image: jellyfin/jellyfin:${JELLYFIN_VERSION:-latest}
     container_name: jellyfin
     user: 14:50
-    ports:
-      - 8096:8096 #TODO DELETE (handled by traefik)
     volumes:
       - jellyfin-config:/config
       - jellyfin-cache:/cache
       - downloads:/media:ro
     restart: 'unless-stopped'
     environment:
-      - JELLYFIN_PublishedServerUrl=https://tv.ddignac.fr
+      - JELLYFIN_PublishedServerUrl=https://tv.${DOMAIN_NAME}
     networks:
      - dmz_net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.jellyfin.rule=Host(`tv.ddignac.fr`)"
+      - "traefik.http.routers.jellyfin.rule=Host(`tv.${DOMAIN_NAME}`)"
       - "traefik.http.routers.jellyfin.entrypoints=websecure"
       - "traefik.http.routers.jellyfin.tls.certresolver=letsencrypt"
       - "traefik.http.routers.jellyfin.middlewares=securityHeaders@file"
@@ -28,7 +26,6 @@ services:
       - 9091:9091 #TODO DELETE (handled by traefik) 
     networks:
       - admin_net
-      - vpn
     environment:
       - PUID=14
       - PGID=50
@@ -41,7 +38,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.transmission.rule=Host(`torrent.ddignac.fr`)"
+      - "traefik.http.routers.transmission.rule=Host(`torrent.${DOMAIN_NAME}`)"
       - "traefik.http.routers.transmission.entrypoints=websecure"
       - "traefik.http.routers.transmission.tls=true"
       - "traefik.http.routers.transmission.tls.certresolver=letsencrypt"
@@ -61,6 +58,4 @@ networks:
   dmz_net:
     external: true
   admin_net:
-    external: true
-  vpn: #TODO TO delete
     external: true
