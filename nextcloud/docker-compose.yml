@@ -1,32 +1,14 @@
-version: '2'
-
-volumes:
-  media_softwares:
-    external: true
-  onlyoffice_data:
-  data:
-  config:
-  custom_apps:
-
-networks:
-  db_mariadb_net:
-    external: true
-  vpn:
-    external: true
-  dmz_net:
-    external: true
-
 services:
 
   nextcloud:
-    image: nextcloud:latest
+    image: nextcloud:${NEXTCLOUD_VERSION}
     container_name: nextcloud
     restart: always
     volumes:
       - data:/var/www/html/data
       - config:/var/www/html/config
       - custom_apps:/var/www/html/custom_apps
-    #      - media_softwares:/var/www/html/logiciels
+      - media_softwares:/var/www/html/logiciels
     environment:
       - MYSQL_PASSWORD=${DB_PWD}
       - MYSQL_DATABASE=${DB_NAME}
@@ -36,17 +18,16 @@ services:
       - PHP_UPLOAD_LIMIT=4096M
     networks:
       - db_mariadb_net
-      - vpn
       - dmz_net
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=dmz_net"
-      - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.ddignac.fr`)"
+      - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.${DOMAIN_NAME}`) || Host(`drive.${DOMAIN_NAME}`)"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.tls.certresolver=letsencrypt"
 
   onlyoffice:
-    image: onlyoffice/documentserver
+    image: onlyoffice/documentserver:${ONLYOFFICE_VERSION}
     container_name: onlyoffice
     restart: always
     environment:
@@ -55,11 +36,10 @@ services:
     volumes:
       - onlyoffice_data:/var/www/onlyoffice/Data
     networks:
-      - vpn
       - dmz_net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.onlyoffice.rule=Host(`office.ddignac.fr`)"
+      - "traefik.http.routers.onlyoffice.rule=Host(`office.${DOMAIN_NAME}`)"
       - "traefik.http.routers.onlyoffice.entrypoints=websecure"
       - "traefik.http.routers.onlyoffice.tls.certresolver=letsencrypt"
       - "traefik.http.services.onlyoffice.loadbalancer.server.port=80"
@@ -76,3 +56,17 @@ services:
 
       - "traefik.http.middlewares.onlyoffice-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.onlyoffice.middlewares=onlyoffice-headers"
+
+volumes:
+  media_softwares:
+    external: true
+  onlyoffice_data:
+  data:
+  config:
+  custom_apps:
+
+networks:
+  db_mariadb_net:
+    external: true
+  dmz_net:
+    external: true
