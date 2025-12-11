@@ -1,0 +1,42 @@
+services: 
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_VERSION}
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_config:/etc/prometheus
+      - prometheus_data:/prometheus
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN_NAME}`)"
+    #   - "traefik.http.routers.prometheus.entrypoints=websecure"
+    #   - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+    #   - "traefik.http.routers.prometheus.middlewares=adminWhitelist@file,basicAuth@file"
+
+  grafana:
+    image: grafana/grafana:${GRAFANA_VERSION}
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - admin_net
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_NAME}`)"
+    #   - "traefik.http.routers.grafana.entrypoints=websecure"
+    #   - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+    #   - "traefik.http.routers.grafana.middlewares=adminWhitelist@file,basicAuth@file"
+
+networks:
+  admin_net:
+    external: true
+volumes:
+  grafana_data:
+  prometheus_data:
+  prometheus_config:
+
