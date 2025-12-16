@@ -22,10 +22,11 @@ services:
       - db_redis_net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.lt-nextcloud.rule=Host(`nuage.citoyliens.fr`)"
-      - "traefik.http.routers.lt-nextcloud.entrypoints=web,websecure"
-      - "traefik.http.routers.lt-nextcloud.tls=true"
-      - "traefik.http.routers.lt-nextcloud.tls.certresolver=letsencryptHTTP"
+      - "traefik.docker.network=dmz_net"
+      - "traefik.http.routers.citoyliens-nc.rule=Host(`nuage.citoyliens.fr`)"
+      - "traefik.http.routers.citoyliens-nc.entrypoints=web,websecure"
+      - "traefik.http.routers.citoyliens-nc.tls=true"
+      - "traefik.http.routers.citoyliens-nc.tls.certresolver=letsencryptHTTP"
             
 volumes:
   nextcloud_data:
