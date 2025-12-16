@@ -14,6 +14,9 @@ services:
       - MYSQL_HOST=${DB_HOST}
       - PHP_MEMORY_LIMIT=4096M
       - PHP_UPLOAD_LIMIT=4096M
+      - REDIS_HOST=${DB_REDIS_HOST:-redis}
+      - REDIS_HOST_PORT=${DB_REDIS_PORT:-6379}
+
     networks: 
       - dmz_net
       - db_mariadb_net
@@ -25,6 +28,8 @@ services:
       - "traefik.http.routers.citoyliens-nc.entrypoints=web,websecure"
       - "traefik.http.routers.citoyliens-nc.tls=true"
       - "traefik.http.routers.citoyliens-nc.tls.certresolver=letsencryptHTTP"
+      - "traefik.http.routers.citoyliens-nc.middlewares=securityHeaders@file,compressGzip@file"
+
             
 volumes:
   nextcloud_data:

@@ -14,15 +14,21 @@ services:
       - MYSQL_HOST=${DB_HOST}
       - PHP_MEMORY_LIMIT=4096M
       - PHP_UPLOAD_LIMIT=4096M
+      - REDIS_HOST=${DB_REDIS_HOST:-redis}
+      - REDIS_HOST_PORT=${DB_REDIS_PORT:-6379}
+
     networks: 
       - dmz_net
       - db_mariadb_net
+      - db_redis_net
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=dmz_net"
       - "traefik.http.routers.lt-nextcloud.rule=Host(`drive.lowtechtulle.fr`)"
       - "traefik.http.routers.lt-nextcloud.entrypoints=web,websecure"
       - "traefik.http.routers.lt-nextcloud.tls=true"
       - "traefik.http.routers.lt-nextcloud.tls.certresolver=letsencryptHTTP"
+      - "traefik.http.routers.lt-nextcloud.middlewares=securityHeaders@file,compressGzip@file"
             
 volumes:
   nextcloud_data:
@@ -33,4 +39,6 @@ networks:
   dmz_net:
     external: true
   db_mariadb_net:
+    external: true
+  db_redis_net:
     external: true
