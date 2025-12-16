@@ -3,8 +3,6 @@ services:
   nextcloud:
     image: nextcloud:${CT_NEXTCLOUD_VERSION}
     restart: always
-    ports:
-      - "8081:80"
     volumes:
       - nextcloud_data:/var/www/html/data
       - nextcloud_config:/var/www/html/config
