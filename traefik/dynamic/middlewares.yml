@@ -34,6 +34,9 @@ http:
         sslRedirect: true
         stsSeconds: 31536000
         contentTypeNosniff: true
+        frameDeny: true
+        browserXssFilter: true
+        stsSeconds: 15552000
 
     compressGzip:
       compress: true
