@@ -19,6 +19,7 @@ services:
     networks: 
       - dmz_net
       - db_mariadb_net
+      - db_redis_net
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.lt-nextcloud.rule=Host(`nuage.citoyliens.fr`)"
@@ -35,4 +36,6 @@ networks:
   dmz_net:
     external: true
   db_mariadb_net:
+    external: true
+  db_redis_net:
     external: true
