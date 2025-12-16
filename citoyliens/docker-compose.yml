@@ -1,0 +1,38 @@
+services:
+
+  nextcloud:
+    image: nextcloud:${CT_NEXTCLOUD_VERSION}
+    restart: always
+    ports:
+      - "8081:80"
+    volumes:
+      - nextcloud_data:/var/www/html/data
+      - nextcloud_config:/var/www/html/config
+      - nextcloud_custom_apps:/var/www/html/custom_apps
+    environment:
+      - MYSQL_PASSWORD=${DB_PWD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_HOST=${DB_HOST}
+      - PHP_MEMORY_LIMIT=4096M
+      - PHP_UPLOAD_LIMIT=4096M
+    networks: 
+      - dmz_net
+      - db_mariadb_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lt-nextcloud.rule=Host(`nuage.citoyliens.fr`)"
+      - "traefik.http.routers.lt-nextcloud.entrypoints=web,websecure"
+      - "traefik.http.routers.lt-nextcloud.tls=true"
+      - "traefik.http.routers.lt-nextcloud.tls.certresolver=letsencryptHTTP"
+            
+volumes:
+  nextcloud_data:
+  nextcloud_config:
+  nextcloud_custom_apps:
+
+networks:
+  dmz_net:
+    external: true
+  db_mariadb_net:
+    external: true
