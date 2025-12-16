@@ -16,9 +16,12 @@ services:
       - MYSQL_HOST=${DB_HOST}
       - PHP_MEMORY_LIMIT=4096M
       - PHP_UPLOAD_LIMIT=4096M
+      - REDIS_HOST=${DB_REDIS_HOST:-redis}
+      - REDIS_HOST_PORT=${DB_REDIS_PORT:-6379}
     networks:
       - db_mariadb_net
       - dmz_net
+      - db_redis_net
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=dmz_net"
@@ -67,6 +70,8 @@ volumes:
 
 networks:
   db_mariadb_net:
+    external: true
+  db_redis_net:
     external: true
   dmz_net:
     external: true
