@@ -16,6 +16,25 @@ services:
       - traefik.http.routers.ha.tls.certresolver=letsencrypt
       - traefik.http.routers.ha.middlewares=securityHeaders@file,compressGzip@file
       - traefik.http.services.ha-service.loadbalancer.server.url=http://192.168.1.2:8123
+
+  music-assistant:
+    image: ghcr.io/music-assistant/server:${MA_VERSION} 
+    container_name: music-assistant
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ma-data:/data
+    cap_add:
+      - SYS_ADMIN
+      - DAC_READ_SEARCH
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ma.rule=Host(`music.${DOMAIN_NAME}`)
+      - traefik.http.routers.ma.entrypoints=websecure
+      - traefik.http.routers.ma.tls.certresolver=letsencrypt
+      - traefik.http.routers.ma.middlewares=securityHeaders@file,compressGzip@file
+      - traefik.http.services.ma-service.loadbalancer.server.url=http://192.168.1.2:8095
+
   esphome:
     container_name: esphome
     image: ghcr.io/esphome/esphome:${ESPHOME_VERSION}
@@ -40,3 +59,4 @@ services:
 volumes:
   config:
   esphome-config:
+  ma-data:
