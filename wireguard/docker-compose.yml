@@ -12,7 +12,7 @@ services:
       - WG_DEFAULT_DNS=192.168.0.2
       # AllowedIPs = tous les réseaux accessibles via dns
       # inclut LAN + réseaux Docker internes
-      - WG_ALLOWED_IPS=192.168.1.0/24,10.100.0.0/24,10.10.0.0/24,10.30.0.0/24,10.2.0.0/24,10.3.0.0/24
+      - WG_ALLOWED_IPS=192.168.1.0/24,192.168.0.0/24,10.100.0.0/24,10.10.0.0/24,10.30.0.0/24,10.2.0.0/24,10.3.0.0/24
     volumes:
       - wireguard-configs:/etc/wireguard
     labels:
