@@ -15,7 +15,7 @@ services:
       - traefik.http.routers.ha.entrypoints=websecure
       - traefik.http.routers.ha.tls.certresolver=letsencrypt
       - traefik.http.routers.ha.middlewares=securityHeaders@file,compressGzip@file
-      - traefik.http.services.ha-service.loadbalancer.server.url=http://192.168.1.2:8123
+      - traefik.http.services.ha-service.loadbalancer.server.url=http://192.168.0.2:8123
 
   music-assistant:
     image: ghcr.io/music-assistant/server:${MA_VERSION} 
@@ -33,7 +33,7 @@ services:
       - traefik.http.routers.ma.entrypoints=websecure
       - traefik.http.routers.ma.tls.certresolver=letsencrypt
       - traefik.http.routers.ma.middlewares=securityHeaders@file,compressGzip@file
-      - traefik.http.services.ma-service.loadbalancer.server.url=http://192.168.1.2:8095
+      - traefik.http.services.ma-service.loadbalancer.server.url=http://192.168.0.2:8095
 
   esphome:
     container_name: esphome
@@ -53,7 +53,7 @@ services:
       - traefik.http.routers.esphome.entrypoints=websecure
       - traefik.http.routers.esphome.tls.certresolver=letsencrypt
       - traefik.http.routers.esphome.middlewares=securityHeaders@file,compressGzip@file
-      - traefik.http.services.esphome-service.loadbalancer.server.url=http://192.168.1.2:6052
+      - traefik.http.services.esphome-service.loadbalancer.server.url=http://192.168.0.2:6052
 
 
 volumes:

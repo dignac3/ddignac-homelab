@@ -23,7 +23,7 @@ services:
       - "traefik.http.services.portainer-service.loadbalancer.server.scheme=http"
 
     extra_hosts:
-      - "${DOMAIN_NAME}:192.168.1.2"
+      - "${DOMAIN_NAME}:192.168.0.2"
 
 volumes:
   data:

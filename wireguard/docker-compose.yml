@@ -9,7 +9,7 @@ services:
       - PASSWORD=${WG_PASSWORD}
       - WG_PORT=51820
       - WG_DEFAULT_ADDRESS=10.3.0.x
-      - WG_DEFAULT_DNS=192.168.1.2
+      - WG_DEFAULT_DNS=192.168.0.2
       # AllowedIPs = tous les réseaux accessibles via dns
       # inclut LAN + réseaux Docker internes
       - WG_ALLOWED_IPS=192.168.1.0/24,10.100.0.0/24,10.10.0.0/24,10.30.0.0/24,10.2.0.0/24,10.3.0.0/24
@@ -21,7 +21,7 @@ services:
       - traefik.http.routers.wireguard-router.entrypoints=websecure
       - traefik.http.routers.wireguard-router.tls.certresolver=letsencrypt
       - traefik.http.routers.wireguard-router.middlewares=adminWhitelist@file,securityHeaders@file
-      - traefik.http.services.wg-service.loadbalancer.server.url=http://192.168.1.2:51821
+      - traefik.http.services.wg-service.loadbalancer.server.url=http://192.168.0.2:51821
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
