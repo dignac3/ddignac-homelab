@@ -1,7 +1,7 @@
 http:
   middlewares:
     adminWhitelist:
-      ipWhitelist:
+      IPAllowList:
         sourceRange:
           - "10.3.0.0/24"
           - "192.168.1.0/24"
@@ -33,11 +33,9 @@ http:
     securityHeaders:
       headers:
         sslRedirect: true
-        stsSeconds: 31536000
-        contentTypeNosniff: true
-        frameDeny: true
-        browserXssFilter: true
         stsSeconds: 15552000
+        contentTypeNosniff: true
+        browserXssFilter: true
 
     compressGzip:
       compress: true
