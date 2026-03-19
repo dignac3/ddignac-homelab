@@ -46,3 +46,10 @@ certificatesResolvers:
       storage: acme-http.json
       httpChallenge:
         entryPoint: web
+
+tls:
+  certificates:
+    - domains:
+        - main: "ddignac.fr"
+          sans:
+            - "*.ddignac.fr"
