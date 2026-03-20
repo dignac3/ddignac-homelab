@@ -31,6 +31,14 @@ entryPoints:
               to: websecure  
   websecure:
     address: ":443"
+    http:
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "ddignac.fr"
+            sans:
+              - "*.ddignac.fr"
+    
 
 certificatesResolvers:
   letsencrypt:
@@ -40,6 +48,9 @@ certificatesResolvers:
       dnsChallenge:
         provider: ovh
         delayBeforeCheck: 10
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"
   letsencryptHTTP:
     acme:
       email: dorian@ddignac.fr
