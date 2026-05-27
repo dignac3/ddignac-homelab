@@ -55,8 +55,11 @@ services:
       - "445:445"
     environment:
       TZ: Europe/Paris
-      USER: "${SAMBA_USER};${SAMBA_PASSWORD}"
-      SHARE: "downloads;/downloads;yes;no;no;${SAMBA_USER};none;${SAMBA_USER};Media downloads"
+      USERID: "${MEDIA_UID:-1100}"
+      GROUPID: "${MEDIA_GID:-1100}"
+      USER: "${SAMBA_DOWNLOAD_USER};${SAMBA_DOWNLOAD_PASSWORD}"
+      USER2: "${SAMBA_MUSIC_USER};${SAMBA_MUSIC_PASSWORD}"
+      SHARE: "downloads;/downloads;yes;yes;no;${SAMBA_DOWNLOAD_USER},${SAMBA_MUSIC_USER};none;${SAMBA_DOWNLOAD_USER};Media downloads"
       WORKGROUP: "${SAMBA_WORKGROUP:-WORKGROUP}"
       GLOBAL2: "create mask = 0664"
       GLOBAL3: "directory mask = 2775"
