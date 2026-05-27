@@ -47,6 +47,23 @@ services:
       - "traefik.http.routers.transmission.middlewares=adminWhitelist@file,securityHeaders@file,authentikAuth@file"
       - "traefik.http.services.transmission.loadbalancer.server.port=9091"
 
+  samba:
+    image: dperson/samba:latest
+    container_name: media-smb
+    environment:
+      TZ: Europe/Paris
+      USER: "${SAMBA_USER};${SAMBA_PASSWORD};14;staff;50"
+      SHARE: "downloads;/downloads;yes;no;no;${SAMBA_USER};none;${SAMBA_USER};Media downloads"
+      WORKGROUP: "${SAMBA_WORKGROUP:-WORKGROUP}"
+      GLOBAL: "force group = staff"
+      GLOBAL2: "create mask = 0664"
+      GLOBAL3: "directory mask = 2775"
+    volumes:
+      - downloads:/downloads
+    restart: unless-stopped
+    networks:
+      - admin_net
+
 
 volumes:
   transmission-config:
