@@ -5,11 +5,13 @@ services:
     restart: unless-stopped
     network_mode: host
     environment:
-      - WG_HOST=dns.${DOMAIN_NAME}    
+      - WG_HOST=${DOMAIN_NAME}    
       - PASSWORD=${WG_PASSWORD}
       - WG_PORT=51820
       - WG_DEFAULT_ADDRESS=10.3.0.x
       - WG_DEFAULT_DNS=192.168.0.2
+      - WG_POST_UP=iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o enp5s0 -j MASQUERADE
+      - WG_POST_DOWN=iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -s 10.3.0.0/24 -o enp5s0 -j MASQUERADE
       # AllowedIPs = tous les réseaux accessibles via dns
       # inclut LAN + réseaux Docker internes
       - WG_ALLOWED_IPS=192.168.1.0/24,192.168.0.0/24,10.100.0.0/24,10.10.0.0/24,10.30.0.0/24,10.2.0.0/24,10.3.0.0/24
