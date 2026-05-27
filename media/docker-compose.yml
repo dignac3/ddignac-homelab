@@ -4,7 +4,7 @@ services:
     container_name: jellyfin
     ports:
       - "8096:8096"
-    user: "${MEDIA_UID:-1000}:${MEDIA_GID:-1000}"
+    user: "${MEDIA_UID:-1100}:${MEDIA_GID:-1100}"
     volumes:
       - jellyfin-config:/config
       - jellyfin-cache:/cache
@@ -29,8 +29,8 @@ services:
     networks:
       - admin_net
     environment:
-      - PUID=${MEDIA_UID:-1000}
-      - PGID=${MEDIA_GID:-1000}
+      - PUID=${MEDIA_UID:-1100}
+      - PGID=${MEDIA_GID:-1100}
       - TZ=Etc/UTC+1
     volumes:
       - transmission-config:/config
@@ -55,11 +55,11 @@ services:
       - "445:445"
     environment:
       TZ: Europe/Paris
-      USER: "${SAMBA_USER};${SAMBA_PASSWORD};${MEDIA_UID:-1000};media;${MEDIA_GID:-1000}"
+      USER: "${SAMBA_USER};${SAMBA_PASSWORD};${MEDIA_UID:-1100};media;${MEDIA_GID:-1100}"
       SHARE: "downloads;/downloads;yes;no;no;${SAMBA_USER};none;${SAMBA_USER};Media downloads"
       WORKGROUP: "${SAMBA_WORKGROUP:-WORKGROUP}"
-      USERID: "${MEDIA_UID:-1000}"
-      GROUPID: "${MEDIA_GID:-1000}"
+      USERID: "${MEDIA_UID:-1100}"
+      GROUPID: "${MEDIA_GID:-1100}"
       GLOBAL: "force group = media"
       GLOBAL2: "create mask = 0664"
       GLOBAL3: "directory mask = 2775"
