@@ -50,6 +50,7 @@ services:
     networks:
       - db_postgresql_net
       - db_redis_net
+      - outbound_net
     command: worker
     user: root
     volumes:
@@ -98,3 +99,5 @@ networks:
     external: true
   db_redis_net:
     external: true
+  outbound_net:
+    driver: bridge
