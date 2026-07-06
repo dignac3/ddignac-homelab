@@ -32,7 +32,7 @@ services:
       - db_mariadb_net
 
   postgresql:
-    image: tensorchord/pgvecto-rs:${PG_VERSION}
+    image: ghcr.io/immich-app/postgres:${PG_VERSION}
     container_name: postgresql
     restart: unless-stopped
     environment:
