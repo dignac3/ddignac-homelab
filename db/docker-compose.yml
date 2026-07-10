@@ -36,6 +36,7 @@ services:
     container_name: postgresql
     restart: unless-stopped
     environment:
+      - DB_STORAGE_TYPE=HDD
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_ROOT_PWD}
     volumes:
