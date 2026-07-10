@@ -56,6 +56,7 @@ services:
     volumes:
       - media:/media
       - templates:/templates
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
       AUTHENTIK_REDIS__HOST: ${AUTHENTIK_REDIS__HOST}
@@ -85,6 +86,11 @@ services:
           AUTHENTIK_INSECURE: "true"
           AUTHENTIK_TOKEN: ${AUTHENTIK_PROXY_TOKEN}
           AUTHENTIK_HOST_BROWSER: "https://auth.${DOMAIN_NAME}"
+          AUTHENTIK_POSTGRESQL__HOST: ${AUTHENTIK_POSTGRESQL__HOST}
+          AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER}
+          AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
+          AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+
 
 volumes:
   media:
