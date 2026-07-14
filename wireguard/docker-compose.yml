@@ -42,52 +42,78 @@ services:
       dns:
         ipv4_address: ${UNBOUND_IP}
 
-
-  pihole:
-    depends_on:
-      - unbound
-    container_name: pihole
-    image: pihole/pihole:${PIHOLE_VERSION}
-    restart: unless-stopped
+  adguard:
+    image: adguard/adguardhome
+    container_name: adguard
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "54:80"
-    dns:
-      - ${UNBOUND_IP}
-      - ${DNS_SERVER_1}
-    environment:
-      TZ: "Europe/Paris"
-      WEBPASSWORD: ${PIHOLE_PASSWORD}
-      ServerIP: ${PIHOLE_IP}
-      DNS1: ${UNBOUND_IP}
-      DNS2: ${DNS_SERVER_1}
-      VIRTUAL_HOST: ${PIHOLE_VIRTUAL_HOST}
-      FTLCONF_dns_listeningMode: 'ALL' # ajouté car pihole dans un réseau docker & je veux l'accès dans le LAN de la maison 
-    hostname: ${PIHOLE_VIRTUAL_HOST}
-    volumes:
-      - pihole-etc:/etc/pihole
-      - pihole-dnsmasq:/etc/dnsmasq.d
+      - 53:53/tcp # plain dns over tcp
+      - 53:53/udp # plain dns over udp
+      - 54:80/tcp # http web interface
+      - 3000:3000/tcp # initial setup web interface
+    restart: unless-stopped
     networks:
       dns:
         ipv4_address: ${PIHOLE_IP}
       admin_net:
+    volumes:
+      - adguard-config:/opt/adguardhome/conf # app configuration
+      - adguard-work:/opt/adguardhome/work # app working directory
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pihole.rule=Host(`dns.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.pihole.entrypoints=websecure"
-      - "traefik.http.routers.pihole.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.pihole.middlewares=adminWhitelist@file,securityHeaders@file"
-      - "traefik.http.services.pihole-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.adguardhome.rule=Host(`dns.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.adguardhome.entrypoints=websecure"
+      - "traefik.http.routers.adguardhome.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.adguardhome.middlewares=adminWhitelist@file,securityHeaders@file"
+      - "traefik.http.services.adguardhome-service.loadbalancer.server.port=80"
 
-    cap_add:
-      - NET_ADMIN
+
+  # pihole:
+    # depends_on:
+    #   - unbound
+    # container_name: pihole
+    # image: pihole/pihole:${PIHOLE_VERSION}
+    # restart: unless-stopped
+    # ports:
+    #   - "53:53/tcp"
+    #   - "53:53/udp"
+    #   - "54:80"
+    # dns:
+    #   - ${UNBOUND_IP}
+    #   - ${DNS_SERVER_1}
+    # environment:
+    #   TZ: "Europe/Paris"
+    #   WEBPASSWORD: ${PIHOLE_PASSWORD}
+    #   ServerIP: ${PIHOLE_IP}
+    #   DNS1: ${UNBOUND_IP}
+    #   DNS2: ${DNS_SERVER_1}
+    #   VIRTUAL_HOST: ${PIHOLE_VIRTUAL_HOST}
+    #   FTLCONF_dns_listeningMode: 'ALL' # ajouté car pihole dans un réseau docker & je veux l'accès dans le LAN de la maison 
+    # hostname: ${PIHOLE_VIRTUAL_HOST}
+    # volumes:
+    #   - pihole-etc:/etc/pihole
+    #   - pihole-dnsmasq:/etc/dnsmasq.d
+    # networks:
+    #   dns:
+    #     ipv4_address: ${PIHOLE_IP}
+    #   admin_net:
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.pihole.rule=Host(`dns.${DOMAIN_NAME}`)"
+    #   - "traefik.http.routers.pihole.entrypoints=websecure"
+    #   - "traefik.http.routers.pihole.tls.certresolver=letsencrypt"
+    #   - "traefik.http.routers.pihole.middlewares=adminWhitelist@file,securityHeaders@file"
+    #   - "traefik.http.services.pihole-service.loadbalancer.server.port=80"
+
+    # cap_add:
+    #   - NET_ADMIN
 
 volumes:
   wireguard-configs:
   pihole-etc:
   pihole-dnsmasq:
   unbound-config:
+  adguard-config:
+  adguard-work:
 
 networks:
   admin_net:
