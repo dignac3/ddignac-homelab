@@ -49,7 +49,7 @@ services:
       - 53:53/tcp # plain dns over tcp
       - 53:53/udp # plain dns over udp
       - 54:80/tcp # http web interface
-      - 3000:3000/tcp # initial setup web interface
+      - 55:3000/tcp # initial setup web interface
     restart: unless-stopped
     networks:
       dns:
