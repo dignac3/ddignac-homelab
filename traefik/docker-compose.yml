@@ -11,10 +11,11 @@ services:
       - .env
     command: --configFile=/traefik.yml 
     environment:
-      - OVH_ENDPOINT=ovh-eu
-      - OVH_APPLICATION_KEY=${OVH_APPLICATION_KEY}
-      - OVH_APPLICATION_SECRET=${OVH_APPLICATION_SECRET}
-      - OVH_CONSUMER_KEY=${OVH_CONSUMER_KEY}
+      # - OVH_ENDPOINT=ovh-eu
+      # - OVH_APPLICATION_KEY=${OVH_APPLICATION_KEY}
+      # - OVH_APPLICATION_SECRET=${OVH_APPLICATION_SECRET}
+      # - OVH_CONSUMER_KEY=${OVH_CONSUMER_KEY}
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
