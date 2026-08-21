@@ -21,6 +21,114 @@ services:
       - "traefik.http.routers.jellyfin.tls.certresolver=letsencrypt"
       - "traefik.http.routers.jellyfin.middlewares=securityHeaders@file"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+
+  # --- Requests portal (users ask for movies/shows, pushes to Radarr/Sonarr) ---
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    volumes:
+      - jellyseerr-config:/app/config
+    restart: unless-stopped
+    networks:
+      - dmz_net
+      - admin_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyseerr.rule=Host(`requests.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.jellyseerr.entrypoints=websecure"
+      - "traefik.http.routers.jellyseerr.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.jellyseerr.middlewares=securityHeaders@file"
+      - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
+
+  # --- Indexer aggregator, feeds Sonarr/Radarr with search results ---
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${MEDIA_UID:-1100}
+      - PGID=${MEDIA_GID:-1100}
+      - TZ=Etc/UTC+1
+    volumes:
+      - prowlarr-config:/config
+    restart: unless-stopped
+    networks:
+      - admin_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.prowlarr.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.prowlarr.middlewares=adminWhitelist@file,securityHeaders@file,authentikAuth@file"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+
+  # --- Series automation: search, download via transmission, rename into /media/series (or /media/animes) ---
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${MEDIA_UID:-1100}
+      - PGID=${MEDIA_GID:-1100}
+      - TZ=Etc/UTC+1
+    volumes:
+      - sonarr-config:/config
+      - downloads:/downloads
+      - downloads:/media
+    restart: unless-stopped
+    networks:
+      - admin_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.routers.sonarr.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.sonarr.middlewares=adminWhitelist@file,securityHeaders@file,authentikAuth@file"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+
+  # --- Movie automation: search, download via transmission, rename into /media/films ---
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${MEDIA_UID:-1100}
+      - PGID=${MEDIA_GID:-1100}
+      - TZ=Etc/UTC+1
+    volumes:
+      - radarr-config:/config
+      - downloads:/downloads
+      - downloads:/media
+    restart: unless-stopped
+    networks:
+      - admin_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+      - "traefik.http.routers.radarr.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.radarr.middlewares=adminWhitelist@file,securityHeaders@file,authentikAuth@file"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+
+  # --- Subtitles automation for Sonarr/Radarr libraries ---
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=${MEDIA_UID:-1100}
+      - PGID=${MEDIA_GID:-1100}
+      - TZ=Etc/UTC+1
+    volumes:
+      - bazarr-config:/config
+      - downloads:/media
+    restart: unless-stopped
+    networks:
+      - admin_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bazarr.rule=Host(`bazarr.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.bazarr.entrypoints=websecure"
+      - "traefik.http.routers.bazarr.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.bazarr.middlewares=adminWhitelist@file,securityHeaders@file,authentikAuth@file"
+      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
+
   transmission:
     image: lscr.io/linuxserver/transmission:${TRANSMISSION_VERSION:-latest}
     container_name: transmission
@@ -76,6 +184,11 @@ volumes:
   downloads:
   jellyfin-cache:
   jellyfin-config:
+  jellyseerr-config:
+  prowlarr-config:
+  sonarr-config:
+  radarr-config:
+  bazarr-config:
   torrent-watch:
 
 networks:
