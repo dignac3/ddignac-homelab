@@ -58,7 +58,7 @@ services:
       - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN_NAME}`)"
       - "traefik.http.routers.prowlarr.entrypoints=websecure"
       - "traefik.http.routers.prowlarr.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.prowlarr.middlewares=adminWhitelist@file,securityHeaders@file,authentikAuth@file"
+      - "traefik.http.routers.prowlarr.middlewares=adminWhitelist@file,securityHeaders@file"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
 
   # --- Series automation: search, download via transmission, rename into /media/series (or /media/animes) ---
@@ -81,7 +81,7 @@ services:
       - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN_NAME}`)"
       - "traefik.http.routers.sonarr.entrypoints=websecure"
       - "traefik.http.routers.sonarr.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.sonarr.middlewares=adminWhitelist@file,securityHeaders@file,authentikAuth@file"
+      - "traefik.http.routers.sonarr.middlewares=adminWhitelist@file,securityHeaders@file"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
 
   # --- Movie automation: search, download via transmission, rename into /media/films ---
@@ -104,7 +104,7 @@ services:
       - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN_NAME}`)"
       - "traefik.http.routers.radarr.entrypoints=websecure"
       - "traefik.http.routers.radarr.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.radarr.middlewares=adminWhitelist@file,securityHeaders@file,authentikAuth@file"
+      - "traefik.http.routers.radarr.middlewares=adminWhitelist@file,securityHeaders@file"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
 
   # --- Subtitles automation for Sonarr/Radarr libraries ---
@@ -126,7 +126,7 @@ services:
       - "traefik.http.routers.bazarr.rule=Host(`bazarr.${DOMAIN_NAME}`)"
       - "traefik.http.routers.bazarr.entrypoints=websecure"
       - "traefik.http.routers.bazarr.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.bazarr.middlewares=adminWhitelist@file,securityHeaders@file,authentikAuth@file"
+      - "traefik.http.routers.bazarr.middlewares=adminWhitelist@file,securityHeaders@file"
       - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
 
   transmission:
