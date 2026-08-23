@@ -129,13 +129,44 @@ services:
       - "traefik.http.routers.bazarr.middlewares=adminWhitelist@file,securityHeaders@file"
       - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
 
+  # --- VPN gateway for transmission (ProtonVPN via WireGuard) ---
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${VPN_WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_ADDRESSES=${VPN_WIREGUARD_ADDRESSES}
+      - SERVER_COUNTRIES=${VPN_SERVER_COUNTRIES:-France}
+    volumes:
+      - gluetun-config:/gluetun
+    restart: unless-stopped
+    networks:
+      - admin_net
+    ports:
+      - 9091:9091 #TODO DELETE (handled by traefik)
+    # Traefik labels live here, not on transmission: once transmission uses
+    # network_mode: service:gluetun it has no network attachment of its own.
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.transmission.rule=Host(`torrent.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.transmission.entrypoints=websecure"
+      - "traefik.http.routers.transmission.tls=true"
+      - "traefik.http.routers.transmission.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.transmission.middlewares=adminWhitelist@file,securityHeaders@file,authentikAuth@file"
+      - "traefik.http.services.transmission.loadbalancer.server.port=9091"
+
   transmission:
     image: lscr.io/linuxserver/transmission:${TRANSMISSION_VERSION:-latest}
     container_name: transmission
-    ports:
-      - 9091:9091 #TODO DELETE (handled by traefik) 
-    networks:
-      - admin_net
+    network_mode: "service:gluetun"
+    depends_on:
+      - gluetun
     environment:
       - PUID=${MEDIA_UID:-1100}
       - PGID=${MEDIA_GID:-1100}
@@ -146,14 +177,6 @@ services:
       - softwares:/downloads/softwares
       - torrent-watch:/watch
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.transmission.rule=Host(`torrent.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.transmission.entrypoints=websecure"
-      - "traefik.http.routers.transmission.tls=true"
-      - "traefik.http.routers.transmission.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.transmission.middlewares=adminWhitelist@file,securityHeaders@file,authentikAuth@file"
-      - "traefik.http.services.transmission.loadbalancer.server.port=9091"
 
   samba:
     image: dperson/samba:latest
@@ -190,6 +213,7 @@ volumes:
   radarr-config:
   bazarr-config:
   torrent-watch:
+  gluetun-config:
 
 networks:
   dmz_net:
