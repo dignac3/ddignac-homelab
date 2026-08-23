@@ -24,7 +24,7 @@ services:
 
   # --- Requests portal (users ask for movies/shows, pushes to Radarr/Sonarr) ---
   jellyseerr:
-    image: fallenbagel/jellyseerr:latest
+    image: ghcr.io/seerr-team/seerr:latest
     container_name: jellyseerr
     volumes:
       - jellyseerr-config:/app/config
