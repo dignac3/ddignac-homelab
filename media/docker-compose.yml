@@ -142,6 +142,7 @@ services:
       - VPN_TYPE=wireguard
       - WIREGUARD_PRIVATE_KEY=${VPN_WIREGUARD_PRIVATE_KEY}
       - SERVER_COUNTRIES=${VPN_SERVER_COUNTRIES:-France}
+      - VPN_PORT_FORWARDING=on
     volumes:
       - gluetun-config:/gluetun
     restart: unless-stopped
