@@ -143,6 +143,7 @@ services:
       - WIREGUARD_PRIVATE_KEY=${VPN_WIREGUARD_PRIVATE_KEY}
       - SERVER_COUNTRIES=${VPN_SERVER_COUNTRIES:-France}
       - VPN_PORT_FORWARDING=on
+      - VPN_PORT_FORWARDING_STATUS_FILE=/tmp/gluetun/forwarded_port
     volumes:
       - gluetun-config:/gluetun
     restart: unless-stopped
@@ -166,7 +167,8 @@ services:
     container_name: transmission
     network_mode: "service:gluetun"
     depends_on:
-      - gluetun
+      gluetun:
+        condition: service_healthy
     environment:
       - PUID=${MEDIA_UID:-1100}
       - PGID=${MEDIA_GID:-1100}
@@ -176,6 +178,23 @@ services:
       - downloads:/downloads
       - softwares:/downloads/softwares
       - torrent-watch:/watch
+    restart: unless-stopped
+
+  # --- Watches gluetun's forwarded ProtonVPN port and pushes it into Transmission's peer-port via RPC ---
+  gluetun-helper:
+    image: mrgasparov/gluetun-forwarding-helper:latest
+    container_name: gluetun-helper
+    network_mode: "service:gluetun"
+    environment:
+      - GLUETUN_API_URL=http://localhost:8000
+      - TARGET_APP=transmission
+      - TRANSMISSION_RPC_URL=http://localhost:9091/transmission/rpc
+      - CHECK_INTERVAL=300
+    depends_on:
+      gluetun:
+        condition: service_healthy
+      transmission:
+        condition: service_started
     restart: unless-stopped
 
   samba:
