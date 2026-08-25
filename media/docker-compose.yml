@@ -146,7 +146,7 @@ services:
       - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh /scripts/set-transmission-port.sh {{PORT}}
     volumes:
       - gluetun-config:/gluetun
-      - ./scripts/set-transmission-port.sh:/scripts/set-transmission-port.sh:ro
+      -   /home/dodo/ddignac-homelab/media/scripts/set-transmission-port.sh:/scripts/set-transmission-port.sh:ro
     restart: unless-stopped
     networks:
       - admin_net
