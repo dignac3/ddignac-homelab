@@ -144,6 +144,7 @@ services:
       - SERVER_COUNTRIES=${VPN_SERVER_COUNTRIES:-France}
       - VPN_PORT_FORWARDING=on
       - VPN_PORT_FORWARDING_STATUS_FILE=/tmp/gluetun/forwarded_port
+      - HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE={"auth":"none"}
     volumes:
       - gluetun-config:/gluetun
     restart: unless-stopped
