@@ -1,17 +1,17 @@
 #!/bin/sh
 # Called by gluetun's VPN_PORT_FORWARDING_UP_COMMAND with the forwarded port as $1.
-# Pushes it to Transmission's RPC (peer-port), handling the CSRF session-id handshake.
+# Bakes the port into Transmission's settings.json before Transmission starts
+# (Transmission depends_on gluetun being healthy, so this runs first — no RPC/CSRF needed).
+# NOTE: if the VPN reconnects with a new port while Transmission is already running,
+# run `docker compose restart transmission` once to pick it up.
 set -eu
 
 PORT="$1"
-URL="http://127.0.0.1:9091/transmission/rpc"
+CONFIG=/transmission-config/settings.json
 
-SID=$(wget -q -S -O /dev/null --post-data='{}' "$URL" 2>&1 | grep -i 'X-Transmission-Session-Id' | awk '{print $2}' | tr -d '\r\n' || true)
-
-wget -q -O- \
-  --header="X-Transmission-Session-Id: ${SID}" \
-  --header="Content-Type: application/json" \
-  --post-data="{\"method\":\"session-set\",\"arguments\":{\"peer-port\":${PORT}}}" \
-  "$URL" >/dev/null
-
-echo "Set Transmission peer-port to ${PORT}"
+if [ -f "$CONFIG" ]; then
+  sed -i -E "s/\"peer-port\": [0-9]+/\"peer-port\": ${PORT}/" "$CONFIG"
+  echo "Set peer-port to ${PORT} in ${CONFIG}"
+else
+  echo "settings.json not found yet (first boot), skipping" >&2
+fi
