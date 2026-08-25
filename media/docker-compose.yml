@@ -170,6 +170,9 @@ services:
     depends_on:
       gluetun:
         condition: service_healthy
+      gluetun-helper:
+        condition: service_completed_successfully
+        restart: true
     environment:
       - PUID=${MEDIA_UID:-1100}
       - PGID=${MEDIA_GID:-1100}
@@ -181,22 +184,18 @@ services:
       - torrent-watch:/watch
     restart: unless-stopped
 
-  # --- Watches gluetun's forwarded ProtonVPN port and pushes it into Transmission's peer-port via RPC ---
+  # --- Writes gluetun's forwarded ProtonVPN port into Transmission's settings.json before it starts ---
   gluetun-helper:
     image: mrgasparov/gluetun-forwarding-helper:latest
     container_name: gluetun-helper
     network_mode: "service:gluetun"
     environment:
-      - GLUETUN_API_URL=http://localhost:8000
-      - TARGET_APP=transmission
-      - TRANSMISSION_RPC_URL=http://localhost:9091/transmission/rpc
-      - CHECK_INTERVAL=300
+      - SERVICE=transmission
+    volumes:
+      - transmission-config:/config
     depends_on:
       gluetun:
         condition: service_healthy
-      transmission:
-        condition: service_started
-    restart: unless-stopped
 
   samba:
     image: dperson/samba:latest
